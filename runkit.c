@@ -315,13 +315,10 @@ static inline void _php_runkit_init_stub_function(const char *name, void (*handl
 }
 #endif
 
-#if defined(PHP_RUNKIT_SANDBOX) || defined(PHP_RUNKIT_MANIPULATION)
-static void php_runkit_globals_ctor(zend_runkit_globals *runkit_global TSRMLS_DC)  // P.R fixed
+#if defined(PHP_RUNKIT_MANIPULATION) // fix added here..
+static void php_runkit_globals_ctor(void *pDest TSRMLS_DC)
 {
-	//zend_runkit_globals *runkit_global = (zend_runkit_globals *) pDest;
-#ifdef PHP_RUNKIT_SANDBOX
-	runkit_global->current_sandbox = NULL;
-#endif
+	zend_runkit_globals *runkit_global = (zend_runkit_globals *) pDest;
 #ifdef PHP_RUNKIT_MANIPULATION
 	runkit_global->replaced_internal_functions = NULL;
 	runkit_global->misplaced_internal_functions = NULL;
@@ -335,6 +332,8 @@ static void php_runkit_globals_ctor(zend_runkit_globals *runkit_global TSRMLS_DC
 	_php_runkit_init_stub_function("__method_removed_by_runkit__", ZEND_FN(_php_runkit_removed_method), &runkit_global->removed_method);
 #endif
 }
+
+
 #endif
 
 #define php_runkit_feature_constant(feature, enabled) \
