@@ -316,9 +316,9 @@ static inline void _php_runkit_init_stub_function(const char *name, void (*handl
 #endif
 
 #if defined(PHP_RUNKIT_SANDBOX) || defined(PHP_RUNKIT_MANIPULATION)
-static void php_runkit_globals_ctor(void *pDest)
+static void php_runkit_globals_ctor(zend_runkit_globals *runkit_global TSRMLS_DC)  // P.R fixed
 {
-	zend_runkit_globals *runkit_global = (zend_runkit_globals *) pDest;
+	//zend_runkit_globals *runkit_global = (zend_runkit_globals *) pDest;
 #ifdef PHP_RUNKIT_SANDBOX
 	runkit_global->current_sandbox = NULL;
 #endif
@@ -362,7 +362,7 @@ PHP_MINIT_FUNCTION(runkit)
 	ts_allocate_id(&runkit_globals_id, sizeof(zend_runkit_globals), php_runkit_globals_ctor, NULL);
 #endif
 #else
-	php_runkit_globals_ctor(runkit_globals); // P.R Reference removed here.
+	php_runkit_globals_ctor(&runkit_globals);
 #endif
 
 #if defined(PHP_RUNKIT_SUPERGLOBALS) || defined(PHP_RUNKIT_MANIPULATION)
