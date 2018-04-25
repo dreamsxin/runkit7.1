@@ -24,16 +24,32 @@ install:
                 }
 
 cache:
-        c:\build-cache -> appveyor.yml, appveyor\*.bat
+        c:\build-cache -> .appveyor.yml
 
 environment:
         BIN_SDK_VER: 2.1.3
-        matrix:
+        matrix:               
                 - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
                   ARCH: x64
                   VC: vc15
                   PHP_VER: 7.2.2
                   TS: 0
+                - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+                  ARCH: x64
+                  VC: vc15
+                  PHP_VER: 7.2.2
+                  TS: 1
+                - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+                  ARCH: x86
+                  VC: vc15
+                  PHP_VER: 7.2.2
+                  TS: 0
+                - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+                  ARCH: x86
+                  VC: vc15
+                  PHP_VER: 7.2.2
+                  TS: 1
+                  
                 
 
 build_script:
@@ -52,20 +68,26 @@ build_script:
                 if (-not (Test-Path c:\build-cache\$dname1)) {
                         7z x c:\build-cache\$bname -oc:\build-cache
                         move c:\build-cache\$dname0 c:\build-cache\$dname1
-                }  
+                }
                 cd c:\projects\runkit7
-                
-                $env:PATH = 'c:\build-cache\' + $dname1 + ';' + $env:PATH              
+                $env:PATH = 'c:\build-cache\' + $dname1 + ';' + $env:PATH
+                #echo "@echo off" | Out-File -Encoding "ASCII" task.bat
+                #echo "" | Out-File -Encoding "ASCII" -Append task.bat
+                echo "" | Out-File -Encoding "ASCII" task.bat
+                echo "call phpize 2>&1" | Out-File -Encoding "ASCII" -Append task.bat
+                echo "call configure --enable-runkit --enable-debug-pack 2>&1" | Out-File -Encoding "ASCII" -Append task.bat                
+                echo "nmake /NOLOGO /F make.txt 2>&1" | Out-File -Encoding "ASCII" -Append task.bat
+                echo "exit %errorlevel%" | Out-File -Encoding "ASCII" -Append task.bat
                 $here = (Get-Item -Path "." -Verbose).FullName
                 $runner = 'c:\build-cache\php-sdk-' + $env:BIN_SDK_VER + '\phpsdk' + '-' + $env:VC + '-' + $env:ARCH + '.bat'
-                $task = $here + '\appveyor\task.bat'
+                $task = $here + '\task.bat'
                 & $runner -t $task
 
 after_build:
         ps: |
                 $ts_part = 'ts'
                 if ('0' -eq $env:TS) { $ts_part = 'nts' }
-                $zip_bname = 'php_runkit-' + $env:APPVEYOR_REPO_COMMIT.substring(0, 8) + '-' + $env:PHP_VER.substring(0, 3) + '-' + $ts_part + '-' + $env:VC + '-' + $env:ARCH + '.zip'
+                $zip_bname = 'php_runkit7-' + $env:APPVEYOR_REPO_COMMIT.substring(0, 8) + '-' + $env:PHP_VER.substring(0, 3) + '-' + $ts_part + '-' + $env:VC + '-' + $env:ARCH + '.zip'
                 $dir = 'c:\projects\runkit7\';
                 if ('x64' -eq $env:ARCH) { $dir = $dir + 'x64\' }
                 $dir = $dir + 'Release'
