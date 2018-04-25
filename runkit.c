@@ -362,7 +362,7 @@ PHP_MINIT_FUNCTION(runkit)
 	ts_allocate_id(&runkit_globals_id, sizeof(zend_runkit_globals), php_runkit_globals_ctor, NULL);
 #endif
 #else
-	php_runkit_globals_ctor(&runkit_globals);
+	php_runkit_globals_ctor(runkit_globals); // P.R Reference removed here.
 #endif
 
 #if defined(PHP_RUNKIT_SUPERGLOBALS) || defined(PHP_RUNKIT_MANIPULATION)
