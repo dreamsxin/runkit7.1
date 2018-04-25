@@ -210,6 +210,7 @@ ZEND_END_MODULE_GLOBALS(runkit)
 extern ZEND_DECLARE_MODULE_GLOBALS(runkit)
 
 #ifdef ZTS
+#include "TSRM.h"
 #define		RUNKIT_G(v)		TSRMG(runkit_globals_id, zend_runkit_globals *, v)
 #else
 #define		RUNKIT_G(v)		(runkit_globals.v)
