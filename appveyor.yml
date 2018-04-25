@@ -27,7 +27,7 @@ cache:
         c:\build-cache -> appveyor.yml, appveyor\*.bat
 
 environment:
-        BIN_SDK_VER: 2.1.3
+        BIN_SDK_VER: 2.1.1
         matrix:
                 - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
                   ARCH: x64
