@@ -1,12 +1,9 @@
 @echo off
 
-phpsdk_buildtree phpdev
+call phpize 2>&1
 
-buildconf
+call configure --enable-runkit --enable-debug-pack 2>&1
     
-configure --enable-runkit
-    
-nmake
+nmake /nologo 2>&1
 
 exit %errorlevel%
-    
